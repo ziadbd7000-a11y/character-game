@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>صناعة شخصية</title>
+  <style>
+    body { font-family: Arial; background:#111; color:white; text-align:center; padding:20px; }
+    .box { background:#222; padding:20px; border-radius:10px; width:300px; margin:auto; }
+    select, button { width:100%; padding:10px; margin-top:10px; border-radius:5px; }
+    .result { margin-top:20px; font-size:20px; }
+  </style>
+</head>
+<body>
+
+  <h1>اصنع شخصيتك</h1>
+
+  <div class="box">
+    <label>لون البشرة:</label>
+    <select id="skin">
+      <option>أبيض</option>
+      <option>حنطي</option>
+      <option>أسمر</option>
+      <option>غامق</option>
+    </select>
+
+    <label>لون الشعر:</label>
+    <select id="hairColor">
+      <option>أسود</option>
+      <option>بني</option>
+      <option>أشقر</option>
+      <option>أحمر</option>
+    </select>
+
+    <label>شكل الشعر:</label>
+    <select id="hairStyle">
+      <option>قصير</option>
+      <option>طويل</option>
+      <option>مجعد</option>
+      <option>ناعم</option>
+    </select>
+
+    <button onclick="generate()">اعرض الشخصية</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function generate() {
+      let skin = document.getElementById('skin').value;
+      let hairColor = document.getElementById('hairColor').value;
+      let hairStyle = document.getElementById('hairStyle').value;
+
+      document.getElementById('result').innerText =
+        `🎭 شخصيتك: بشرة ${skin}، شعر ${hairColor} و${hairStyle}`;
+    }
+  </script>
+
+</body>
+</html>
