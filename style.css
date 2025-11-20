@@ -1,68 +1,60 @@
-body {
-    font-family: Arial;
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 20px;
+// رسم الشخصية الأساسية (وجه + عين + شعر)
+function renderCharacter() {
+    const skin = document.getElementById("skinPicker").value;
+    const hair = document.getElementById("hairPicker").value;
+    const hairStyle = document.getElementById("hairStyle").value;
+    const eyeStyle = document.getElementById("eyeStyle").value;
+
+    let hairPath = "";
+    if (hairStyle == "1") {
+        hairPath = `<path d="M70 100 C80 20, 200 20, 210 100 Z" fill="${hair}" />`;
+    } else if (hairStyle == "2") {
+        hairPath = `<path d="M55 120 C75 -10, 210 -10, 225 120 Z" fill="${hair}" />`;
+    } else {
+        hairPath = `<path d="M50 110 C70 -5, 210 -5, 230 110 L230 180 C210 240, 70 240, 50 180 Z" fill="${hair}" />`;
+    }
+
+    let eyes = "";
+    if (eyeStyle == "1") {
+        eyes = `
+            <circle cx="110" cy="150" r="10"/>
+            <circle cx="170" cy="150" r="10"/>
+        `;
+    } else if (eyeStyle == "2") {
+        eyes = `
+            <ellipse cx="110" cy="150" rx="15" ry="10"/>
+            <ellipse cx="170" cy="150" rx="15" ry="10"/>
+        `;
+    } else {
+        eyes = `
+            <ellipse cx="110" cy="155" rx="12" ry="8"/>
+            <ellipse cx="170" cy="155" rx="12" ry="8"/>
+        `;
+    }
+
+    document.getElementById("character").innerHTML = `
+        <svg viewBox="0 0 260 300">
+
+            <!-- الشعر -->
+            ${hairPath}
+
+            <!-- الوجه -->
+            <ellipse cx="140" cy="170" rx="85" ry="110" fill="${skin}" />
+
+            <!-- العيون -->
+            ${eyes}
+
+            <!-- الفم -->
+            <path d="M110 210 C140 230, 170 230, 190 210"
+                  stroke="#a06a63" stroke-width="5" fill="none"/>
+        </svg>
+    `;
 }
 
-h1 {
-    margin-bottom: 25px;
-}
+// شغّل الشخصية أول ما يدخل المستخدم الموقع
+renderCharacter();
 
-.box {
-    background: #222;
-    margin: 20px auto;
-    padding: 20px;
-    width: 90%;
-    max-width: 400px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px #0007;
-}
-
-label {
-    display: block;
-    margin-top: 10px;
-    text-align: right;
-}
-
-select, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    font-size: 17px;
-    border: none;
-    border-radius: 8px;
-}
-
-button {
-    background: #4caf50;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-button:hover {
-    background: #45a049;
-}
-
-.result {
-    margin-top: 25px;
-    font-size: 20px;
-    background: #333;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-.character-box {
-    margin: 30px auto;
-    width: 200px;
-    height: 260px;
-    background: #222;
-    border-radius: 15px;
-    box-shadow: 0 0 12px #0008;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 19px;
-}
+// حدث تغييرات المظهر
+document.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("input", renderCharacter);
+});
