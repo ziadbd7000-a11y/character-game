@@ -1,59 +1,217 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>صناعة شخصية</title>
-  <style>
-    body { font-family: Arial; background:#111; color:white; text-align:center; padding:20px; }
-    .box { background:#222; padding:20px; border-radius:10px; width:300px; margin:auto; }
-    select, button { width:100%; padding:10px; margin-top:10px; border-radius:5px; }
-    .result { margin-top:20px; font-size:20px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Character Builder</title>
+
+<style>
+  body {
+    background: #111;
+    color: #fff;
+    font-family: sans-serif;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .box {
+    background: #1c1c1c;
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 22px;
+  }
+
+  select, input[type="checkbox"] {
+    padding: 10px;
+    margin: 6px 0;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+  }
+
+  .character-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px;
+    margin-top: 20px;
+  }
+</style>
 </head>
 <body>
 
-  <h1>اصنع شخصيتك</h1>
+<h2>✨ صمّم شخصيتك</h2>
 
-  <div class="box">
-    <label>لون البشرة:</label>
-    <select id="skin">
-      <option>أبيض</option>
-      <option>حنطي</option>
-      <option>أسمر</option>
-      <option>غامق</option>
-    </select>
+<div class="box">
+  <label>لون البشرة</label>
+  <select id="skin">
+    <option value="#f1c27d">فاتح</option>
+    <option value="#d1a074">قمحي</option>
+    <option value="#a06f45">حنطي</option>
+    <option value="#70422a">غامق</option>
+  </select>
 
-    <label>لون الشعر:</label>
-    <select id="hairColor">
-      <option>أسود</option>
-      <option>بني</option>
-      <option>أشقر</option>
-      <option>أحمر</option>
-    </select>
+  <label>لون الشعر</label>
+  <select id="hairColor">
+    <option value="#2b1b0b">بني</option>
+    <option value="#000000">أسود</option>
+    <option value="#cfa46d">أشقر</option>
+    <option value="#91452b">نحاسي</option>
+  </select>
 
-    <label>شكل الشعر:</label>
-    <select id="hairStyle">
-      <option>قصير</option>
-      <option>طويل</option>
-      <option>مجعد</option>
-      <option>ناعم</option>
-    </select>
+  <label>ستايل الشعر</label>
+  <select id="hairStyle">
+    <option value="1">ستايل 1</option>
+    <option value="2">ستايل 2</option>
+    <option value="3">ستايل 3</option>
+  </select>
 
-    <button onclick="generate()">اعرض الشخصية</button>
+  <label>لون العين</label>
+  <select id="eyeColor">
+    <option value="#5b4636">بني</option>
+    <option value="#3a6ea5">أزرق</option>
+    <option value="#4a9c3e">أخضر</option>
+    <option value="#000000">أسود</option>
+  </select>
 
-    <div class="result" id="result"></div>
-  </div>
+  <label>إضافات</label>
+  <select id="extraSel">
+    <option value="none">بدون</option>
+    <option value="freckles">نمش</option>
+  </select>
 
-  <script>
-    function generate() {
-      let skin = document.getElementById('skin').value;
-      let hairColor = document.getElementById('hairColor').value;
-      let hairStyle = document.getElementById('hairStyle').value;
+  <label style="margin-top:10px">
+    <input type="checkbox" id="glassesCb" />
+    نظارة
+  </label>
+</div>
 
-      document.getElementById('result').innerText =
-        `🎭 شخصيتك: بشرة ${skin}، شعر ${hairColor} و${hairStyle}`;
-    }
-  </script>
+
+<!-- =================== شخصية SVG =================== -->
+<div class="character-box">
+  <svg id="avatar" width="200" height="260" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- خلفية -->
+    <rect width="100%" height="100%" fill="transparent"/>
+
+    <!-- شعر الخلف -->
+    <g id="hairBack1">
+      <path d="M10,70 C30,10 170,10 190,70 C170,50 140,40 100,40 C60,40 30,50 10,70 Z" fill="#2b1b0b"/>
+    </g>
+
+    <g id="hairBack2" style="display:none">
+      <path d="M5,80 C40,0 160,0 195,80 C170,60 135,40 100,40 C65,40 30,60 5,80 Z" fill="#2b1b0b"/>
+    </g>
+
+    <g id="hairBack3" style="display:none">
+      <path d="M0,90 C50,0 150,0 200,90 C170,70 130,50 100,45 C70,50 30,70 0,90 Z" fill="#2b1b0b"/>
+    </g>
+
+    <!-- الوجه -->
+    <circle id="face" cx="100" cy="110" r="60" fill="#f1c27d"/>
+
+    <!-- الأذنين -->
+    <ellipse cx="36" cy="110" rx="10" ry="14" fill="#f1c27d"/>
+    <ellipse cx="164" cy="110" rx="10" ry="14" fill="#f1c27d"/>
+
+    <!-- شعر الأمام -->
+    <g id="hairFront1">
+      <path d="M40,80 C70,40 130,40 160,80 C140,65 120,58 100,58 C80,58 60,65 40,80 Z" fill="#2b1b0b"/>
+    </g>
+
+    <g id="hairFront2" style="display:none">
+      <path d="M30,85 C70,30 130,30 170,85 C145,70 120,64 100,60 C80,64 55,70 30,85 Z" fill="#2b1b0b"/>
+    </g>
+
+    <g id="hairFront3" style="display:none">
+      <path d="M50,78 C80,45 120,45 150,78 C135,68 115,62 100,60 C85,62 65,68 50,78 Z" fill="#2b1b0b"/>
+    </g>
+
+    <!-- العيون -->
+    <g id="eyes">
+      <ellipse cx="76" cy="110" rx="16" ry="10" fill="#fff"/>
+      <ellipse id="irisL" cx="76" cy="110" rx="7" ry="7" fill="#5b4636"/>
+      <circle cx="81" cy="106" r="2.4" fill="#fff"/>
+
+      <ellipse cx="124" cy="110" rx="16" ry="10" fill="#fff"/>
+      <ellipse id="irisR" cx="124" cy="110" rx="7" ry="7" fill="#5b4636"/>
+      <circle cx="129" cy="106" r="2.4" fill="#fff"/>
+    </g>
+
+    <!-- الفم -->
+    <g transform="translate(0,30)">
+      <path id="mouthSmile" d="M82 170 q18 12 36 0" stroke="#6b2f2f" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <!-- نمش -->
+    <g id="freckles" style="display:none" fill="#b76b4d">
+      <circle cx="86" cy="128" r="2.2"/>
+      <circle cx="112" cy="128" r="2.2"/>
+      <circle cx="96" cy="136" r="2.2"/>
+    </g>
+
+    <!-- النظارة -->
+    <g id="glasses" style="display:none">
+      <rect x="60" y="100" width="34" height="22" rx="6" fill="none" stroke="#2b2b2b" stroke-width="3"/>
+      <rect x="106" y="100" width="34" height="22" rx="6" fill="none" stroke="#2b2b2b" stroke-width="3"/>
+      <path d="M94 111 h12" stroke="#2b2b2b" stroke-width="3"/>
+    </g>
+
+  </svg>
+</div>
+
+
+<!-- =========== JavaScript =========== -->
+<script>
+function renderAvatarFromUI() {
+  const skin = skinElem.value;
+  const hairColor = hairColorElem.value;
+  const hairStyle = hairStyleElem.value;
+  const eyeColor = eyeColorElem.value;
+
+  // البشرة
+  face.setAttribute("fill", skin);
+  document.querySelectorAll('ellipse[rx="10"][ry="14"]').forEach(e=>e.setAttribute("fill", skin));
+
+  // الشعر (إظهار ستايل واحد فقط)
+  ["1","2","3"].forEach(n => {
+    document.getElementById("hairBack"+n).style.display = (hairStyle===n?"":"none");
+    document.getElementById("hairFront"+n).style.display = (hairStyle===n?"":"none");
+    document.querySelectorAll("#hairBack"+n+" path").forEach(p=>p.setAttribute("fill", hairColor));
+    document.querySelectorAll("#hairFront"+n+" path").forEach(p=>p.setAttribute("fill", hairColor));
+  });
+
+  // العيون
+  irisL.setAttribute("fill", eyeColor);
+  irisR.setAttribute("fill", eyeColor);
+
+  // نمش
+  freckles.style.display = (extraSel.value==="freckles" ? "" : "none");
+
+  // نظارة
+  glasses.style.display = (glassesCb.checked ? "" : "none");
+}
+
+// اجزاء HTML
+const skinElem = document.getElementById("skin");
+const hairColorElem = document.getElementById("hairColor");
+const hairStyleElem = document.getElementById("hairStyle");
+const eyeColorElem = document.getElementById("eyeColor");
+const extraSel = document.getElementById("extraSel");
+const glassesCb = document.getElementById("glassesCb");
+
+// عناصر SVG
+const face = document.getElementById("face");
+const irisL = document.getElementById("irisL");
+const irisR = document.getElementById("irisR");
+const freckles = document.getElementById("freckles");
+const glasses = document.getElementById("glasses");
+
+// تشغيل عند التغيير
+[skinElem, hairColorElem, hairStyleElem, eyeColorElem, extraSel, glassesCb]
+.forEach(el => el.addEventListener("change", renderAvatarFromUI));
+
+document.addEventListener("DOMContentLoaded", renderAvatarFromUI);
+</script>
 
 </body>
 </html>
