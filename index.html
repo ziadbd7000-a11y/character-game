@@ -1,41 +1,388 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>Character Maker</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>صانع الشخصية — صفحة واحدة جاهزة</title>
+<style>
+  :root{
+    --bg:#0f1620; --card:#ffffff; --muted:#93a7b2; --accent:#2dd4bf;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family: "Noto Naskh Arabic", "Segoe UI", Roboto, Arial,sans-serif;background:linear-gradient(180deg,#08101a,#0f1620);color:#e8f6f8}
+  .wrap{max-width:1100px;margin:26px auto;padding:18px}
+  h1{margin:0 0 10px;text-align:center;font-size:20px}
+  .desc{color:var(--muted);text-align:center;margin-bottom:12px}
+  .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .controls label{display:block;color:var(--muted);font-size:13px;margin-top:10px}
+  select,input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+  .row{display:flex;gap:8px;margin-top:10px}
+  .row>*{flex:1}
+  button.primary{background:var(--accent);border:0;color:#052023;font-weight:700;padding:10px;border-radius:8px;cursor:pointer}
+  .canvas{width:360px;height:480px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:18px}
+  .small{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+  @media(max-width:980px){.layout{grid-template-columns:1fr}.canvas{width:320px;height:420px}}
+</style>
 </head>
 <body>
+<div class="wrap">
+  <h1>صانع الشخصية — نسخة صفحة واحدة</h1>
+  <div class="desc">انسخ الكود بالكامل واستبدله في index.html. كل شيء داخل ملف واحد — CSS + SVG + JS.</div>
 
-<h2 class="title">صانع الشخصية</h2>
+  <div class="layout">
+    <!-- controls -->
+    <div class="card controls">
+      <label>لون البشرة</label>
+      <select id="skin">
+        <option value="#f7dfc6">فاتح جدا</option>
+        <option value="#e6bf97">فاتح</option>
+        <option value="#d39a6b">متوسط</option>
+        <option value="#a56a3b">داكن</option>
+        <option value="#6a3f2a">غامق</option>
+      </select>
 
-<div id="character-container">
-    <!-- هنا تنعرض الشخصية -->
-    <div id="character"></div>
+      <label>لون الشعر</label>
+      <select id="hairColor">
+        <option value="#2b1b17">أسود</option>
+        <option value="#3b2416">بني غامق</option>
+        <option value="#8b5a3c">بني فاتح</option>
+        <option value="#d4b56a">أشقر</option>
+        <option value="#b74a32">نحاسي</option>
+      </select>
+
+      <label>ستايل الشعر</label>
+      <select id="hairStyle">
+        <option value="short">قصير</option>
+        <option value="side">وسط</option>
+        <option value="long">طويل</option>
+        <option value="curly">مموج</option>
+      </select>
+
+      <label>لون العين</label>
+      <select id="eyeColor">
+        <option value="#3b2b20">بني</option>
+        <option value="#0b223f">أزرق</option>
+        <option value="#2f7a3e">أخضر</option>
+        <option value="#000000">أسود</option>
+      </select>
+
+      <label>شكل الحاجب</label>
+      <select id="browStyle">
+        <option value="normal">عادي</option>
+        <option value="thick">سميك</option>
+        <option value="arched">مقوس</option>
+      </select>
+
+      <label>الفم</label>
+      <select id="mouthStyle">
+        <option value="smile">مبتسم</option>
+        <option value="neutral">محايد</option>
+        <option value="open">مفتوح</option>
+      </select>
+
+      <label>إضافات</label>
+      <select id="extra">
+        <option value="none">بدون</option>
+        <option value="freckles">نمش</option>
+        <option value="beard">لحية</option>
+        <option value="mole">شامة</option>
+      </select>
+
+      <label style="margin-top:8px"><input id="glasses" type="checkbox"> نظارة</label>
+
+      <label style="margin-top:10px">اسم الشخصية (اختياري)</label>
+      <input id="name" placeholder="مثال: محمد">
+
+      <div class="row">
+        <button class="primary" id="downloadBtn">تحميل PNG</button>
+        <button id="copyJson">نسخ JSON</button>
+      </div>
+
+      <label style="margin-top:12px">JSON (نسخ/لصق)</label>
+      <textarea id="jsonArea" placeholder='{"skin":"#..."}' style="width:100%;height:90px;padding:8px;border-radius:8px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04)"></textarea>
+
+      <div class="row">
+        <button id="loadJson">استيراد</button>
+        <button id="reset">إعادة ضبط</button>
+      </div>
+
+      <div class="small">بعد اللصق: اضغط Commit على GitHub، وبعدين افتح الصفحة تاخذ التغييرات.</div>
+    </div>
+
+    <!-- preview -->
+    <div class="card canvas" id="preview">
+      <!-- SVG هنا -->
+      <svg id="avatar" width="320" height="420" viewBox="0 0 320 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="معاينة الشخصية">
+        <defs>
+          <clipPath id="faceClip"><path d="M160 80 C125 80 100 110 95 150 C90 195 110 235 140 260 C170 285 210 285 240 260 C270 235 290 195 285 150 C280 110 195 80 160 80Z"/></clipPath>
+        </defs>
+
+        <rect width="100%" height="100%" rx="10" fill="#fbfdff"/>
+
+        <!-- ground shadow -->
+        <ellipse cx="160" cy="380" rx="120" ry="16" fill="#000" opacity="0.06"/>
+
+        <!-- shoulders -->
+        <g id="shoulders" transform="translate(0,40)">
+          <path d="M50 340 q120 40 220 0 v-60 q-70 -20 -220 0 z" fill="#f3f6f9"/>
+        </g>
+
+        <!-- hair back variants -->
+        <g id="hair_back_short"><path d="M60 150 C80 80 260 80 260 150 C230 120 200 100 160 100 C120 100 90 120 60 150Z" fill="#2b1b17"/></g>
+        <g id="hair_back_side" style="display:none"><path d="M40 160 C80 40 260 40 300 160 C270 120 210 90 160 90 C110 90 80 120 40 160Z" fill="#2b1b17"/></g>
+        <g id="hair_back_long" style="display:none"><path d="M20 170 C100 10 260 10 300 170 C270 140 230 110 160 100 C90 110 50 140 20 170Z" fill="#2b1b17"/></g>
+        <g id="hair_back_curly" style="display:none"><path d="M30 160 C70 40 290 40 330 160 C300 130 235 110 160 105 C85 110 70 130 30 160Z" fill="#2b1b17"/></g>
+
+        <!-- face group -->
+        <g id="faceGroup" clip-path="url(#faceClip)">
+          <path id="faceBase" d="M160 80 C125 80 100 110 95 150 C90 195 110 235 140 260 C170 285 210 285 240 260 C270 235 290 195 285 150 C280 110 195 80 160 80Z" fill="#f7dfc6"/>
+          <ellipse cx="120" cy="200" rx="12" ry="7" fill="#000" opacity="0.03"/>
+          <ellipse cx="200" cy="200" rx="12" ry="7" fill="#000" opacity="0.03"/>
+        </g>
+
+        <!-- ears -->
+        <g id="ears">
+          <ellipse cx="90" cy="190" rx="16" ry="22" fill="#f7dfc6"/>
+          <ellipse cx="230" cy="190" rx="16" ry="22" fill="#f7dfc6"/>
+        </g>
+
+        <!-- hair front variants -->
+        <g id="hair_front_short"><path d="M95 120 C120 88 220 88 245 120 C225 105 195 92 170 92 C145 92 115 105 95 120Z" fill="#2b1b17"/></g>
+        <g id="hair_front_side" style="display:none"><path d="M90 110 C130 70 230 70 270 110 C240 92 210 85 170 82 C130 85 100 92 90 110Z" fill="#2b1b17"/></g>
+        <g id="hair_front_long" style="display:none"><path d="M110 100 C140 70 220 70 250 100 C230 85 200 80 170 78 C140 80 120 85 110 100Z" fill="#2b1b17"/></g>
+        <g id="hair_front_curly" style="display:none"><path d="M80 112 C130 60 230 60 280 112 C250 92 215 86 170 86 C125 86 90 92 80 112Z" fill="#2b1b17"/></g>
+
+        <!-- brows -->
+        <g id="brow_normal">
+          <path id="bL" d="M120 142 q18 -6 36 0" stroke="#2b1b17" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path id="bR" d="M204 142 q18 -6 36 0" stroke="#2b1b17" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </g>
+        <g id="brow_thick" style="display:none">
+          <path d="M115 140 q24 -8 44 0" stroke="#2b1b17" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M199 140 q24 -8 44 0" stroke="#2b1b17" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </g>
+        <g id="brow_arched" style="display:none">
+          <path d="M130 138 q10 -14 40 -6" stroke="#2b1b17" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M180 138 q10 -14 40 -6" stroke="#2b1b17" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </g>
+
+        <!-- eyes -->
+        <g id="eyesGroup">
+          <g id="leftEye">
+            <ellipse cx="133" cy="160" rx="22" ry="14" fill="#fff"/>
+            <ellipse id="irisL" cx="133" cy="160" rx="9" ry="9" fill="#3b2b20"/>
+            <circle cx="137" cy="156" r="3" fill="#fff"/>
+            <path d="M120 172 q12 8 24 0" stroke="#6b3a2a" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.12"/>
+          </g>
+          <g id="rightEye">
+            <ellipse cx="207" cy="160" rx="22" ry="14" fill="#fff"/>
+            <ellipse id="irisR" cx="207" cy="160" rx="9" ry="9" fill="#3b2b20"/>
+            <circle cx="211" cy="156" r="3" fill="#fff"/>
+            <path d="M194 172 q12 8 24 0" stroke="#6b3a2a" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.12"/>
+          </g>
+        </g>
+
+        <!-- nose -->
+        <path id="nose" d="M170 170 q-4 10 0 22" stroke="#b67b5a" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.7"/>
+
+        <!-- mouth -->
+        <g id="mouthGroup" transform="translate(0,86)">
+          <path id="mouth_smile" d="M150 238 q16 12 36 0" stroke="#7a3b2a" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+          <path id="mouth_neutral" d="M150 242 q16 6 36 0" stroke="#7a3b2a" stroke-width="2.6" stroke-linecap="round" fill="none" style="display:none"/>
+          <path id="mouth_open" d="M155 236 q14 26 28 0 q-14 10 -28 0" fill="#cc6b5a" style="display:none"/>
+        </g>
+
+        <!-- freckles, mole, beard, glasses -->
+        <g id="freckles" style="display:none" fill="#b06b48">
+          <circle cx="158" cy="200" r="2.4"/><circle cx="170" cy="208" r="2.2"/><circle cx="140" cy="208" r="2.2"/>
+        </g>
+        <circle id="mole" cx="140" cy="210" r="2.4" fill="#5a3a2a" style="display:none"/>
+        <g id="beard" style="display:none" opacity="0.95"><path d="M125 255 q45 30 90 0 q-12 15 -90 0" fill="#3b2416"/></g>
+        <g id="glassesGroup" style="display:none">
+          <rect x="140" y="146" width="60" height="36" rx="8" fill="none" stroke="#2b2b2b" stroke-width="3"/>
+          <rect x="212" y="146" width="60" height="36" rx="8" fill="none" stroke="#2b2b2b" stroke-width="3"/>
+          <path d="M200 164 h16" stroke="#2b2b2b" stroke-width="3"/>
+        </g>
+
+      </svg>
+    </div>
+  </div>
 </div>
 
-<div class="controls">
-    <label>لون البشرة:</label>
-    <input type="color" id="skinPicker">
+<script>
+/* عناصر DOM */
+const skin = document.getElementById('skin');
+const hairColor = document.getElementById('hairColor');
+const hairStyle = document.getElementById('hairStyle');
+const eyeColor = document.getElementById('eyeColor');
+const browStyle = document.getElementById('browStyle');
+const mouthStyle = document.getElementById('mouthStyle');
+const extra = document.getElementById('extra');
+const glasses = document.getElementById('glasses');
 
-    <label>لون الشعر:</label>
-    <input type="color" id="hairPicker">
+const faceBase = document.getElementById('faceBase');
+const ears = document.querySelectorAll('#ears ellipse');
 
-    <label>شكل الشعر:</label>
-    <select id="hairStyle">
-        <option value="1">قصير</option>
-        <option value="2">متوسط</option>
-        <option value="3">طويل</option>
-    </select>
+const hairBack = {
+  short: document.getElementById('hair_back_short'),
+  side: document.getElementById('hair_back_side'),
+  long: document.getElementById('hair_back_long'),
+  curly: document.getElementById('hair_back_curly')
+};
+const hairFront = {
+  short: document.getElementById('hair_front_short'),
+  side: document.getElementById('hair_front_side'),
+  long: document.getElementById('hair_front_long'),
+  curly: document.getElementById('hair_front_curly')
+};
 
-    <label>شكل العين:</label>
-    <select id="eyeStyle">
-        <option value="1">عادية</option>
-        <option value="2">واسعة</option>
-        <option value="3">ناعسة</option>
-    </select>
-</div>
+const irisL = document.getElementById('irisL');
+const irisR = document.getElementById('irisR');
 
-<script src="script.js"></script>
+const brow_normal = document.getElementById('brow_normal');
+const brow_thick = document.getElementById('brow_thick');
+const brow_arched = document.getElementById('brow_arched');
+
+const mouth_smile = document.getElementById('mouth_smile');
+const mouth_neutral = document.getElementById('mouth_neutral');
+const mouth_open = document.getElementById('mouth_open');
+
+const freckles = document.getElementById('freckles');
+const mole = document.getElementById('mole');
+const beard = document.getElementById('beard');
+const glassesGroup = document.getElementById('glassesGroup');
+
+/* تحديث */
+function updateAvatar(){
+  // بشرة
+  const skinVal = skin.value;
+  document.getElementById('faceBase').setAttribute('fill', skinVal);
+  ears.forEach(e=>e.setAttribute('fill', skinVal));
+
+  // شعر
+  const hVal = hairColor.value;
+  Object.keys(hairBack).forEach(k=>{
+    hairBack[k].style.display = (k===hairStyle.value ? '' : 'none');
+    hairFront[k].style.display = (k===hairStyle.value ? '' : 'none');
+    hairBack[k].querySelectorAll('path').forEach(p=>p.setAttribute('fill', hVal));
+    hairFront[k].querySelectorAll('path').forEach(p=>p.setAttribute('fill', hVal));
+  });
+
+  // عيون
+  irisL.setAttribute('fill', eyeColor.value);
+  irisR.setAttribute('fill', eyeColor.value);
+
+  // حواجب
+  brow_normal.style.display = browStyle.value === 'normal' ? '' : 'none';
+  brow_thick.style.display = browStyle.value === 'thick' ? '' : 'none';
+  brow_arched.style.display = browStyle.value === 'arched' ? '' : 'none';
+  const browColor = shadeColor(hVal, -25);
+  [brow_normal, brow_thick, brow_arched].forEach(g=> g.querySelectorAll('path').forEach(p=>p.setAttribute('stroke', browColor)));
+
+  // فم
+  mouth_smile.style.display = mouthStyle.value === 'smile' ? '' : 'none';
+  mouth_neutral.style.display = mouthStyle.value === 'neutral' ? '' : 'none';
+  mouth_open.style.display = mouthStyle.value === 'open' ? '' : 'none';
+
+  // اضافات
+  freckles.style.display = extra.value === 'freckles' ? '' : 'none';
+  mole.style.display = extra.value === 'mole' ? '' : 'none';
+  beard.style.display = extra.value === 'beard' ? '' : 'none';
+
+  // نظارة
+  glassesGroup.style.display = glasses.checked ? '' : 'none';
+}
+
+/* مساعدة تلوين */
+function shadeColor(color, percent){
+  const num = parseInt(color.slice(1),16);
+  const r = (num >> 16) + Math.round((percent/100)*255);
+  const g = ((num >> 8) & 0x00FF) + Math.round((percent/100)*255);
+  const b = (num & 0x0000FF) + Math.round((percent/100)*255);
+  const clamp = v => Math.max(0, Math.min(255, v));
+  return '#' + ( (1<<24) + (clamp(r)<<16) + (clamp(g)<<8) + clamp(b) ).toString(16).slice(1);
+}
+
+/* أحداث */
+[skin,hairColor,hairStyle,eyeColor,browStyle,mouthStyle,extra,glasses].forEach(el=>{
+  el.addEventListener('change', updateAvatar);
+});
+document.addEventListener('DOMContentLoaded', ()=>{
+  // إذا العناصر غير موجودة (نادر) نملأ القيم الافتراضية
+  if(!document.getElementById('faceBase')) return;
+  updateAvatar();
+});
+
+/* تحميل PNG */
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const svg = document.getElementById('avatar');
+  const xml = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([xml], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = function(){
+    const canvas = document.createElement('canvas');
+    canvas.width = 2000; canvas.height = 2500;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    const scale = Math.min(canvas.width / svg.viewBox.baseVal.width, canvas.height / svg.viewBox.baseVal.height);
+    const w = svg.viewBox.baseVal.width * scale;
+    const h = svg.viewBox.baseVal.height * scale;
+    ctx.drawImage(img, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
+    canvas.toBlob(blob2=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob2);
+      a.download = (document.getElementById('name').value||'character') + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    }, 'image/png', 0.95);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = ()=> alert('فشل تحويل SVG — جرّب إعادة تحميل الصفحة');
+  img.src = url;
+});
+
+/* نسخ JSON واستيراد */
+document.getElementById('copyJson').addEventListener('click', ()=>{
+  const payload = JSON.stringify({
+    skin: skin.value, hairColor: hairColor.value, hairStyle: hairStyle.value,
+    eyeColor: eyeColor.value, browStyle: browStyle.value, mouthStyle: mouthStyle.value,
+    extra: extra.value, glasses: glasses.checked, name: document.getElementById('name').value||''
+  }, null, 2);
+  navigator.clipboard.writeText(payload).then(()=> alert('تم نسخ JSON'));
+});
+
+document.getElementById('loadJson').addEventListener('click', ()=>{
+  try{
+    const data = JSON.parse(document.getElementById('jsonArea').value);
+    if(data.skin) skin.value = data.skin;
+    if(data.hairColor) hairColor.value = data.hairColor;
+    if(data.hairStyle) hairStyle.value = data.hairStyle;
+    if(data.eyeColor) eyeColor.value = data.eyeColor;
+    if(data.browStyle) browStyle.value = data.browStyle;
+    if(data.mouthStyle) mouthStyle.value = data.mouthStyle;
+    if(data.extra) extra.value = data.extra;
+    if(typeof data.glasses === 'boolean') glasses.checked = data.glasses;
+    if(data.name) document.getElementById('name').value = data.name;
+    updateAvatar();
+    alert('تم استيراد الإعدادات');
+  }catch(e){ alert('JSON غير صالح') }
+});
+
+/* إعادة ضبط */
+document.getElementById('reset').addEventListener('click', ()=>{
+  skin.value = '#e6bf97';
+  hairColor.value = '#3b2416';
+  hairStyle.value = 'side';
+  eyeColor.value = '#3b2b20';
+  browStyle.value = 'normal';
+  mouthStyle.value = 'smile';
+  extra.value = 'none';
+  glasses.checked = false;
+  document.getElementById('name').value = '';
+  updateAvatar();
+});
+</script>
 </body>
 </html>
